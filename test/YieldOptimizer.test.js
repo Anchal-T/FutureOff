@@ -1,5 +1,5 @@
-const { expect } = require("chai");
-const { ethers, upgrades } = require("hardhat");
+import { expect } from "chai";
+import { ethers, upgrades } from "hardhat";
 
 describe("YieldOptimizer", function () {
   let YieldOptimizer, yieldOptimizer, owner, user, aiAgent, token;

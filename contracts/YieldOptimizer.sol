@@ -87,10 +87,11 @@ contract YieldOptimizer is
 
     // Initializer
     function initialize(
+        address _owner,
         uint256 _performanceFee,
         uint256 _managementFee
     ) public initializer {
-        __Ownable_init();
+        __Ownable_init(_owner);
         __ReentrancyGuard_init();
         __Pausable_init();
         
