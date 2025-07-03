@@ -10,7 +10,15 @@ async function getStrategyRecommendation(protocolData) {
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = await response.text();
-    return JSON.parse(text);
+    
+    console.log('Gemini AI Response:', text);
+    
+    try {
+        return JSON.parse(text);
+    } catch (error) {
+        console.error('Failed to parse JSON from AI response:', text);
+        throw new Error(`Invalid JSON response from AI: ${text}`);
+    }
 }
 
 module.exports = { getStrategyRecommendation };
