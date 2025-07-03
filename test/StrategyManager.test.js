@@ -1,6 +1,5 @@
-import { expect } from 'chai';
-import hardhat from 'hardhat';
-const { ethers } = hardhat;
+const { expect } = require('chai');
+const { ethers, upgrades } = require('hardhat');
 
 describe("StrategyManager", function () {
   let StrategyManager, YieldOptimizer, strategyManager, yieldOptimizer;

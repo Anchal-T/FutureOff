@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Autonomous AI system for DeFi yield optimization across multiple chains",
   "main": "src/index.js",
-  "type": "module",
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
@@ -59,6 +58,7 @@
     "@nomicfoundation/hardhat-verify": "^2.0.14",
     "@openzeppelin/contracts": "^5.0.1",
     "@openzeppelin/contracts-upgradeable": "^5.0.1",
+    "@openzeppelin/hardhat-upgrades": "^3.9.0",
     "@typechain/ethers-v6": "^0.5.1",
     "@typechain/hardhat": "^9.1.0",
     "@types/chai": "^5.2.2",
