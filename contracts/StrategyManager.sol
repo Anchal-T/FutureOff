@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "./interfaces/IYieldOptimizer.sol";
@@ -11,7 +12,7 @@ import "./interfaces/IYieldOptimizer.sol";
  * @title StrategyManager
  * @dev Manages individual yield farming strategies and protocol interactions
  */
-contract StrategyManager is Ownable, ReentrancyGuard {
+contract StrategyManager is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeable {
     using SafeERC20 for IERC20;
 
     // Structs
@@ -64,7 +65,15 @@ contract StrategyManager is Ownable, ReentrancyGuard {
         _;
     }
 
-    constructor(address _yieldOptimizer) Ownable(msg.sender) {
+    // Remove the constructor
+    // constructor(address _yieldOptimizer) Ownable(msg.sender) {
+    //     yieldOptimizer = _yieldOptimizer;
+    //     executionFee = 50; // 0.5%
+    // }
+
+    function initialize(address _yieldOptimizer) public initializer {
+        __Ownable_init(msg.sender);
+        __ReentrancyGuard_init();
         yieldOptimizer = _yieldOptimizer;
         executionFee = 50; // 0.5%
     }
