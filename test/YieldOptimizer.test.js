@@ -1,6 +1,6 @@
-import  expect  from "chai";
-import  ethers from "hardhat";
-import upgrades  from "hardhat";
+import { expect } from 'chai';
+import hardhat from 'hardhat';
+const { ethers, upgrades } = hardhat;
 
 describe("YieldOptimizer", function () {
   let YieldOptimizer, yieldOptimizer, owner, user, aiAgent, token;
