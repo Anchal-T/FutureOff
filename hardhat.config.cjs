@@ -1,4 +1,4 @@
-// require("@nomicfoundation/hardhat-toolbox");
+require("@nomicfoundation/hardhat-toolbox");
 require("@openzeppelin/hardhat-upgrades");
 require("solidity-coverage");
 require("dotenv").config();
@@ -16,9 +16,11 @@ module.exports = {
   },
   networks: {
     hardhat: {
-      forking: {
-        url: process.env.ETHEREUM_RPC_URL || "",
-      },
+      forking: process.env.ETHEREUM_RPC_URL
+        ? {
+            url: process.env.ETHEREUM_RPC_URL,
+          }
+        : undefined,
     },
     ethereum: {
       url: process.env.ETHEREUM_RPC_URL || "",
