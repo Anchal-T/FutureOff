@@ -21,6 +21,12 @@ module.exports = {
             url: process.env.ETHEREUM_RPC_URL,
           }
         : undefined,
+      // Fix gas issues when forking
+      initialBaseFeePerGas: 0,
+      gasPrice: "auto",
+      gas: "auto",
+      // Allow unlimited contract size for testing
+      allowUnlimitedContractSize: true,
     },
     ethereum: {
       url: process.env.ETHEREUM_RPC_URL || "",

@@ -31,6 +31,10 @@ describe("YieldOptimizer Full Test Suite", function () {
 
     // Setup initial configuration
     await yieldOptimizer.connect(owner).authorizeAI(aiAgent.address, true);
+    
+    // Add supported tokens
+    await yieldOptimizer.connect(owner).addSupportedToken(await token1.getAddress());
+    await yieldOptimizer.connect(owner).addSupportedToken(await token2.getAddress());
   });
 
   describe("Initialization", function () {
@@ -110,17 +114,27 @@ describe("YieldOptimizer Full Test Suite", function () {
     it("should execute strategies", async function () {
       await yieldOptimizer.connect(owner).whitelistProtocol(protocol.address, "TestProtocol", 500);
       
-      const strategyId = await yieldOptimizer.connect(owner).createStrategy.staticCall(
+      // First deposit some funds to provide total assets for allocation
+      await token1.connect(owner).transfer(user.address, ethers.parseEther("1000"));
+      await token1.connect(user).approve(await yieldOptimizer.getAddress(), ethers.parseEther("1000"));
+      await yieldOptimizer.connect(user).deposit(await token1.getAddress(), ethers.parseEther("1000"));
+      
+      const tx = await yieldOptimizer.connect(owner).createStrategy(
         protocol.address,
         await token1.getAddress(),
         500
       );
       
-      await yieldOptimizer.connect(owner).createStrategy(
-        protocol.address,
-        await token1.getAddress(),
-        500
-      );
+      const receipt = await tx.wait();
+      const event = receipt.logs.find(log => {
+        try {
+          const parsed = yieldOptimizer.interface.parseLog(log);
+          return parsed.name === "StrategyCreated";
+        } catch {
+          return false;
+        }
+      });
+      const strategyId = event ? yieldOptimizer.interface.parseLog(event).args[0] : null;
       
       await expect(
         yieldOptimizer.connect(aiAgent).executeStrategy(strategyId, ethers.parseEther("100"))
@@ -139,15 +153,26 @@ describe("YieldOptimizer Full Test Suite", function () {
       const unauthorizedAI = addrs[1];
       await yieldOptimizer.connect(owner).whitelistProtocol(protocol.address, "TestProtocol", 500);
       
-      const strategyId = await yieldOptimizer.connect(owner).createStrategy.staticCall(
+      const tx = await yieldOptimizer.connect(owner).createStrategy(
         protocol.address,
         await token1.getAddress(),
         500
       );
       
+      const receipt = await tx.wait();
+      const event = receipt.logs.find(log => {
+        try {
+          const parsed = yieldOptimizer.interface.parseLog(log);
+          return parsed.name === "StrategyCreated";
+        } catch {
+          return false;
+        }
+      });
+      const strategyId = event ? yieldOptimizer.interface.parseLog(event).args[0] : null;
+      
       await expect(
         yieldOptimizer.connect(unauthorizedAI).executeStrategy(strategyId, ethers.parseEther("100"))
-      ).to.be.revertedWith("Not authorized AI agent");
+      ).to.be.revertedWith("Not authorized AI");
     });
   });
 
@@ -155,17 +180,22 @@ describe("YieldOptimizer Full Test Suite", function () {
     it("should allow emergency exit", async function () {
       await yieldOptimizer.connect(owner).whitelistProtocol(protocol.address, "TestProtocol", 500);
       
-      const strategyId = await yieldOptimizer.connect(owner).createStrategy.staticCall(
+      const tx = await yieldOptimizer.connect(owner).createStrategy(
         protocol.address,
         await token1.getAddress(),
         500
       );
       
-      await yieldOptimizer.connect(owner).createStrategy(
-        protocol.address,
-        await token1.getAddress(),
-        500
-      );
+      const receipt = await tx.wait();
+      const event = receipt.logs.find(log => {
+        try {
+          const parsed = yieldOptimizer.interface.parseLog(log);
+          return parsed.name === "StrategyCreated";
+        } catch {
+          return false;
+        }
+      });
+      const strategyId = event ? yieldOptimizer.interface.parseLog(event).args[0] : null;
       
       await expect(
         yieldOptimizer.connect(owner).emergencyExit(strategyId, "Emergency test")

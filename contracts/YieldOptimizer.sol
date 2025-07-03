@@ -205,6 +205,9 @@ contract YieldOptimizer is
         UserPosition storage position = userPositions[msg.sender];
         position.totalDeposited += amount;
         position.lastUpdate = block.timestamp;
+        
+        // Update total assets
+        totalAssets += amount;
 
         emit UserDeposit(msg.sender, token, amount);
     }
@@ -218,6 +221,9 @@ contract YieldOptimizer is
 
         position.totalDeposited -= amount;
         position.lastUpdate = block.timestamp;
+        
+        // Update total assets
+        totalAssets -= amount;
 
         IERC20(token).safeTransfer(msg.sender, amount);
 
@@ -250,6 +256,29 @@ contract YieldOptimizer is
     function authorizeAI(address aiAgent, bool status) external onlyOwner {
         authorizedAI[aiAgent] = status;
         emit AIAuthorized(aiAgent, status);
+    }
+
+    /**
+     * @dev Add supported token
+     */
+    function addSupportedToken(address token) external onlyOwner {
+        require(token != address(0), "Invalid token address");
+        require(!isTokenSupported(token), "Token already supported");
+        supportedTokens.push(token);
+    }
+
+    /**
+     * @dev Remove supported token
+     */
+    function removeSupportedToken(address token) external onlyOwner {
+        require(isTokenSupported(token), "Token not supported");
+        for (uint i = 0; i < supportedTokens.length; i++) {
+            if (supportedTokens[i] == token) {
+                supportedTokens[i] = supportedTokens[supportedTokens.length - 1];
+                supportedTokens.pop();
+                break;
+            }
+        }
     }
 
     /**
