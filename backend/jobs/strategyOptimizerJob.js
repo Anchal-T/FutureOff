@@ -12,7 +12,7 @@ async function getProtocolData() {
 }
 
 // Run the job every 4 hours
-cron.schedule('0 */4 * * *', async () => {
+cron.schedule('* * * * *', async () => {
     console.log('Running strategy optimization job...');
     const protocolData = await getProtocolData();
     const recommendation = await getStrategyRecommendation(protocolData);
