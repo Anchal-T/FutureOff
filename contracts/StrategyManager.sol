@@ -64,7 +64,7 @@ contract StrategyManager is Ownable, ReentrancyGuard {
         _;
     }
 
-    constructor(address _yieldOptimizer) {
+    constructor(address _yieldOptimizer) Ownable(msg.sender) {
         yieldOptimizer = _yieldOptimizer;
         executionFee = 50; // 0.5%
     }
@@ -119,8 +119,8 @@ contract StrategyManager is Ownable, ReentrancyGuard {
         
         ProtocolAdapter storage adapter = protocolAdapters[params.protocol];
         
-        // Approve tokens for protocol interaction
-        IERC20(params.token).safeApprove(adapter.adapterAddress, params.amount);
+        // Approve tokens for protocol interaction using SafeERC20
+        IERC20(params.token).safeIncreaseAllowance(adapter.adapterAddress, params.amount);
         
         // Call protocol adapter
         (bool success, bytes memory data) = adapter.adapterAddress.call(params.data);
