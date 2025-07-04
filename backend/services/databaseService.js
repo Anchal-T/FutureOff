@@ -1,128 +1,121 @@
 const fs = require('fs');
 const path = require('path');
+const sqlite3 = require('sqlite3').verbose();
+const { open } = require('sqlite');
 
 let db;
 
 async function initDB() {
-    const { Low, JSONFile } = await import('lowdb');
-    const file = path.join(__dirname, '../data/db.json');
-    const adapter = new JSONFile(file);
-    db = new Low(adapter);
+    db = await open({
+        filename: path.join(__dirname, '../data/db.sqlite'),
+        driver: sqlite3.Database
+    });
 
-    await db.read();
-    db.data ||= {
-        strategies: [],
-        protocols: [],
-        executionHistory: [],
-        simulationLogs: []
-    };
-    
-    // Migrate existing strategies if they exist
-    const legacyStrategiesPath = path.join(__dirname, '../data/strategies.json');
-    if (fs.existsSync(legacyStrategiesPath) && db.data.strategies.length === 0) {
-        try {
-            const legacyStrategies = JSON.parse(fs.readFileSync(legacyStrategiesPath, 'utf8'));
-            db.data.strategies = legacyStrategies.map((strategy, index) => ({
-                id: `strategy_${index + 1}`,
-                ...strategy,
-                status: 'created',
-                createdAt: strategy.timestamp || new Date().toISOString()
-            }));
-            console.log(`Migrated ${legacyStrategies.length} strategies from legacy JSON file`);
-        } catch (error) {
-            console.warn('Could not migrate legacy strategies:', error.message);
-        }
-    }
-    
-    await db.write();
-    console.log('Database initialized');
+    // Create tables if they don't exist
+    await db.exec(`
+        CREATE TABLE IF NOT EXISTS strategies (
+            id TEXT PRIMARY KEY,
+            name TEXT,
+            status TEXT,
+            createdAt TEXT,
+            lastUpdated TEXT,
+            executionDetails TEXT
+        );
+        CREATE TABLE IF NOT EXISTS protocols (
+            id TEXT PRIMARY KEY,
+            name TEXT,
+            lastUpdated TEXT
+        );
+        CREATE TABLE IF NOT EXISTS executionHistory (
+            id TEXT PRIMARY KEY,
+            timestamp TEXT,
+            details TEXT
+        );
+        CREATE TABLE IF NOT EXISTS simulationLogs (
+            id TEXT PRIMARY KEY,
+            timestamp TEXT,
+            action TEXT,
+            details TEXT
+        );
+    `);
+
+    console.log('SQLite database initialized');
 }
 
 // Strategy operations
 async function getStrategies() {
-    return db.data.strategies;
+    return db.all('SELECT * FROM strategies');
 }
 
 async function addStrategy(strategy) {
-    const newStrategy = {
-        id: `strategy_${Date.now()}`,
-        ...strategy,
-        status: 'created',
-        createdAt: new Date().toISOString()
-    };
-    db.data.strategies.push(newStrategy);
-    await db.write();
-    return newStrategy;
+    const id = `strategy_${Date.now()}`;
+    const createdAt = new Date().toISOString();
+    await db.run(
+        'INSERT INTO strategies (id, name, status, createdAt) VALUES (?, ?, ?, ?)',
+        id, strategy.name, 'created', createdAt
+    );
+    return { id, ...strategy, status: 'created', createdAt };
 }
 
 async function updateStrategyStatus(id, status, executionDetails = {}) {
-    const strategy = db.data.strategies.find(s => s.id === id);
-    if (strategy) {
-        strategy.status = status;
-        strategy.lastUpdated = new Date().toISOString();
-        if (executionDetails) {
-            strategy.executionDetails = executionDetails;
-        }
-    }
-    await db.write();
-    return strategy;
+    await db.run(
+        'UPDATE strategies SET status = ?, lastUpdated = ?, executionDetails = ? WHERE id = ?',
+        status, new Date().toISOString(), JSON.stringify(executionDetails), id
+    );
+    return db.get('SELECT * FROM strategies WHERE id = ?', id);
 }
 
 // Execution history
 async function addExecutionHistory(entry) {
-    const historyEntry = {
-        id: `exec_${Date.now()}`,
-        timestamp: new Date().toISOString(),
-        ...entry
-    };
-    db.data.executionHistory.push(historyEntry);
-    await db.write();
-    return historyEntry;
+    const id = `exec_${Date.now()}`;
+    const timestamp = new Date().toISOString();
+    await db.run(
+        'INSERT INTO executionHistory (id, timestamp, details) VALUES (?, ?, ?)',
+        id, timestamp, JSON.stringify(entry)
+    );
+    return { id, timestamp, ...entry };
 }
 
 async function getExecutionHistory(limit = 50) {
-    return db.data.executionHistory
-        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-        .slice(0, limit);
+    return db.all('SELECT * FROM executionHistory ORDER BY timestamp DESC LIMIT ?', limit);
 }
 
 // Protocol operations
 async function getProtocols() {
-    return db.data.protocols;
+    return db.all('SELECT * FROM protocols');
 }
 
 async function updateProtocols(protocols) {
-    db.data.protocols = protocols.map(protocol => ({
-        ...protocol,
-        lastUpdated: new Date().toISOString()
-    }));
-    await db.write();
-    return db.data.protocols;
+    const promises = protocols.map(protocol => {
+        return db.run(
+            'INSERT INTO protocols (id, name, lastUpdated) VALUES (?, ?, ?) ON CONFLICT(id) DO UPDATE SET name = ?, lastUpdated = ?',
+            protocol.id, protocol.name, new Date().toISOString(), protocol.name, new Date().toISOString()
+        );
+    });
+    await Promise.all(promises);
+    return db.all('SELECT * FROM protocols');
 }
 
 // Simulation logs
 async function addSimulationLog(action, details) {
-    const logEntry = {
-        id: `sim_${Date.now()}`,
-        timestamp: new Date().toISOString(),
-        action,
-        details
-    };
-    db.data.simulationLogs.push(logEntry);
+    const id = `sim_${Date.now()}`;
+    const timestamp = new Date().toISOString();
+    await db.run(
+        'INSERT INTO simulationLogs (id, timestamp, action, details) VALUES (?, ?, ?, ?)',
+        id, timestamp, action, JSON.stringify(details)
+    );
     
     // Keep only last 1000 simulation logs
-    if (db.data.simulationLogs.length > 1000) {
-        db.data.simulationLogs = db.data.simulationLogs.slice(-1000);
+    const count = await db.get('SELECT COUNT(*) as count FROM simulationLogs');
+    if (count.count > 1000) {
+        await db.run('DELETE FROM simulationLogs WHERE id NOT IN (SELECT id FROM simulationLogs ORDER BY timestamp DESC LIMIT 1000)');
     }
     
-    await db.write();
-    return logEntry;
+    return { id, timestamp, action, details };
 }
 
 async function getSimulationLogs(limit = 100) {
-    return db.data.simulationLogs
-        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-        .slice(0, limit);
+    return db.all('SELECT * FROM simulationLogs ORDER BY timestamp DESC LIMIT ?', limit);
 }
 
 module.exports = {
