@@ -1,6 +1,6 @@
 const express = require('express');
 const apiRoutes = require('./routes/api');
-const databaseService = require('./services/databaseService');
+const databaseService = require('./services/databaseService.mjs');
 
 // Initialize database
 databaseService.initDB().catch(console.error);

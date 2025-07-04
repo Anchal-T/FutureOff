@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const databaseService = require('../services/databaseService');
+const databaseService = require('../services/databaseService.mjs');
 const blockchainService = require('../services/blockchainService');
 const { runStrategyOptimizer } = require('../jobs/strategyOptimizerJob');
 
