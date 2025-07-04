@@ -1,0 +1,18 @@
+[
+  {
+    "action": "REBALANCE",
+    "fromProtocol": "f2726d05-1f8d-4b9c-80e3-43d03d85d117",
+    "toProtocol": "e880e828-ca59-4ec6-8d4f-27182a4dc23d",
+    "percentage": 100,
+    "reasoning": "Rebalance WETH from Aave-v2 (0.07% APY) to Aave-v3 (1.76% APY) to significantly increase yield while moving to a lower risk score protocol. The APY difference (1.69%) exceeds the 1% threshold.",
+    "timestamp": "2025-07-04T06:14:38.785Z"
+  },
+  {
+    "action": "REBALANCE",
+    "fromProtocol": "aa70268e-4b52-42bf-a116-608b370f9501",
+    "toProtocol": "665dc8bc-c79d-4800-97f7-304bf368e547",
+    "percentage": 50,
+    "reasoning": "Rebalance a portion of USDC from Aave-v3 (3.95% APY) to Uniswap-v3 USDC-WETH LP (8.4% APY). This offers a substantial yield increase (4.45% difference) but requires asset conversion (USDC to WETH) and involves a higher risk profile (3500 vs 2500) due to impermanent loss and Uniswap-v3's high risk classification based on TVL below $100M for this specific pool. A 50% rebalance is suggested for balanced exposure.",
+    "timestamp": "2025-07-04T06:14:38.787Z"
+  }
+]
