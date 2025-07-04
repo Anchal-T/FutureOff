@@ -1,23 +1,134 @@
-# Yield Farming Optimization Agent - Frontend
+# Yield Optimizer
 
-A React-based frontend for the Yield Farming Optimization Agent, built with Wagmi, Ethers.js, Axios, and Tailwind CSS.
+A comprehensive DeFi yield optimization platform that automatically finds and executes the best yield farming strategies across multiple protocols and chains.
 
-## Setup
+## 🚀 Features
 
-1. Install dependencies:
+- **Automated Yield Optimization**: AI-powered strategy selection and execution
+- **Multi-Chain Support**: Ethereum, Polygon, Arbitrum, and Optimism
+- **Risk Management**: Advanced risk assessment and position monitoring
+- **Real-time Analytics**: Live dashboard with performance metrics
+- **Gas Optimization**: Smart transaction batching and timing
+
+## 📁 Project Structure
+
+```
+yield-optimizer/
+├── smart-contracts/     # Solidity smart contracts
+│   ├── contracts/      # Contract source files
+│   ├── test/          # Contract tests
+│   ├── scripts/       # Deployment scripts
+│   └── artifacts/     # Compiled contracts
+├── frontend/           # React web application
+│   ├── src/           # Source code
+│   ├── public/        # Static assets
+│   └── build/         # Production build
+├── backend/            # Node.js API server
+│   ├── routes/        # API routes
+│   ├── services/      # Business logic
+│   └── data/          # Database and data files
+├── docs/              # Documentation
+└── scripts/           # Utility scripts
+```
+
+## 🛠 Quick Start
+
+### Prerequisites
+
+- Node.js >= 16.0.0
+- npm >= 8.0.0
+- Git
+
+### Installation
+
+1. Clone the repository:
    ```bash
-   npm install
-   npm install wagmi ethers@5 axios --legacy-peer-deps
-   npm install -D tailwindcss postcss autoprefixer --legacy-peer-deps
-   npx tailwindcss init -p
+   git clone https://github.com/your-username/yield-optimizer.git
+   cd yield-optimizer
+   ```
 
-2. Configure environment variables in .env:
+2. Install all dependencies:
+   ```bash
+   npm run install:all
+   ```
 
-REACT_APP_BACKEND_API_URL=http://localhost:3000
-REACT_APP_ALCHEMY_API_KEY=your-alchemy-api-key
+3. Copy environment files:
+   ```bash
+   cp .env.example .env
+   cp backend/.env.example backend/.env
+   ```
 
+4. Configure your environment variables in the `.env` files
 
----
+### Development
+
+1. Start the development environment:
+   ```bash
+   npm start
+   ```
+
+   This will start both the frontend (port 3000) and backend (port 3001) concurrently.
+
+2. Compile smart contracts:
+   ```bash
+   npm run build:contracts
+   ```
+
+3. Run tests:
+   ```bash
+   npm test
+   ```
+
+### Deployment
+
+1. Deploy contracts to local network:
+   ```bash
+   npm run deploy:local
+   ```
+
+2. Build for production:
+   ```bash
+   npm run build
+   ```
+
+## 🧪 Testing
+
+- **Smart Contracts**: `cd smart-contracts && npm test`
+- **Frontend**: `cd frontend && npm test`
+- **Backend**: `cd backend && npm test`
+
+## 📚 Documentation
+
+- [Smart Contracts](./docs/contracts.md)
+- [API Reference](./docs/api.md)
+- [Frontend Guide](./docs/frontend.md)
+- [Deployment Guide](./docs/deployment.md)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Commit your changes: `git commit -m 'Add amazing feature'`
+4. Push to the branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## ⚠️ Security
+
+This project is for educational and development purposes. Do not use in production without proper security audits.
+
+## 🔗 Links
+
+- [Demo](https://your-demo-url.com)
+- [Documentation](https://your-docs-url.com)
+- [API](https://api.your-domain.com)
+
+## 📞 Support
+
+For support and questions, please open an issue or contact the team at support@futureoff.com.
 
 ## Step 3: Setup Instructions
 

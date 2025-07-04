@@ -1,49 +1,51 @@
 {
-  "name": "frontend",
-  "version": "0.1.0",
+  "name": "yield-optimizer",
+  "version": "1.0.0",
+  "description": "A comprehensive DeFi yield optimization platform with smart contracts, frontend, and backend",
   "private": true,
-  "dependencies": {
-    "@testing-library/dom": "^10.4.0",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.3.0",
-    "@testing-library/user-event": "^13.5.0",
-    "axios": "^1.10.0",
-    "ethers": "^5.8.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "react-router-dom": "^7.6.3",
-    "react-scripts": "^0.0.0",
-    "viem": "^2.31.6",
-    "wagmi": "^2.15.6",
-    "web-vitals": "^2.1.4"
-  },
+  "workspaces": [
+    "smart-contracts",
+    "frontend",
+    "backend"
+  ],
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "install:all": "npm install && npm run install:contracts && npm run install:frontend && npm run install:backend",
+    "install:contracts": "cd smart-contracts && npm install",
+    "install:frontend": "cd frontend && npm install",
+    "install:backend": "cd backend && npm install",
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "start:frontend": "cd frontend && npm start",
+    "start:backend": "cd backend && npm start",
+    "build": "npm run build:contracts && npm run build:frontend",
+    "build:contracts": "cd smart-contracts && npm run compile",
+    "build:frontend": "cd frontend && npm run build",
+    "test": "npm run test:contracts && npm run test:frontend",
+    "test:contracts": "cd smart-contracts && npm test",
+    "test:frontend": "cd frontend && npm test",
+    "deploy:local": "cd smart-contracts && npm run deploy:local",
+    "clean": "npm run clean:contracts && npm run clean:frontend",
+    "clean:contracts": "cd smart-contracts && npm run clean",
+    "clean:frontend": "cd frontend && rm -rf build"
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.21",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.11"
+    "concurrently": "^8.2.2"
+  },
+  "keywords": [
+    "defi",
+    "yield-optimization",
+    "ethereum",
+    "smart-contracts",
+    "react",
+    "nodejs"
+  ],
+  "author": "FutureOff Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/yield-optimizer.git"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
   }
 }
