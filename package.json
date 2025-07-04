@@ -1,80 +1,49 @@
 {
-  "name": "yield-farming-optimization-agent",
-  "version": "1.0.0",
-  "description": "Autonomous AI system for DeFi yield optimization across multiple chains",
-  "main": "src/index.js",
-  "scripts": {
-    "dev": "nodemon src/index.js",
-    "start": "node src/index.js",
-    "test": "jest",
-    "compile": "npx hardhat compile",
-    "deploy": "npx hardhat run scripts/deploy.js",
-    "test-contracts": "npx hardhat test",
-    "ai-training": "python scripts/train_models.py",
-    "data-collection": "node src/services/dataCollection.js"
-  },
-  "keywords": [
-    "defi",
-    "yield-farming",
-    "ai",
-    "ethereum",
-    "optimization"
-  ],
-  "author": "FutureOff Team",
-  "license": "MIT",
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
   "dependencies": {
-    "@aave/protocol-js": "^4.3.0",
-    "@google/generative-ai": "^0.2.1",
-    "@prisma/client": "^5.7.1",
-    "@uniswap/sdk-core": "^4.2.1",
-    "apollo-server-express": "^3.12.1",
-    "axios": "^1.6.2",
-    "bull": "^4.12.2",
-    "cors": "^2.8.5",
-    "cron": "^3.1.6",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "graphql": "^16.8.1",
-    "helmet": "^7.1.0",
-    "ioredis": "^5.3.2",
-    "joi": "^17.11.0",
-    "langchain": "^0.1.0",
-    "node-cron": "^3.0.3",
-    "pg": "^8.11.3",
-    "prisma": "^5.7.1",
-    "redis": "^4.6.11",
-    "socket.io": "^4.7.4",
-    "uuid": "^9.0.1",
-    "viem": "^1.19.9",
-    "web3": "^4.3.0",
-    "winston": "^3.11.0",
-    "ws": "^8.14.2"
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.10.0",
+    "ethers": "^5.8.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.6.3",
+    "react-scripts": "^0.0.0",
+    "viem": "^2.31.6",
+    "wagmi": "^2.15.6",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   },
   "devDependencies": {
-    "@nomicfoundation/hardhat-chai-matchers": "^2.0.9",
-    "@nomicfoundation/hardhat-ethers": "^3.0.9",
-    "@nomicfoundation/hardhat-network-helpers": "^1.0.13",
-    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
-    "@nomicfoundation/hardhat-verify": "^2.0.14",
-    "@openzeppelin/contracts": "^5.0.1",
-    "@openzeppelin/contracts-upgradeable": "^5.0.1",
-    "@openzeppelin/hardhat-upgrades": "^3.9.0",
-    "@typechain/ethers-v6": "^0.5.1",
-    "@typechain/hardhat": "^9.1.0",
-    "@types/chai": "^5.2.2",
-    "@types/mocha": "^10.0.10",
-    "@types/node": "^20.10.4",
-    "chai": "^4.2.0",
-    "eslint": "^8.55.0",
-    "ethers": "^6.15.0",
-    "hardhat": "^2.19.1",
-    "hardhat-gas-reporter": "^2.3.0",
-    "jest": "^29.7.0",
-    "nodemon": "^3.0.2",
-    "prettier": "^3.1.1",
-    "solidity-coverage": "^0.8.16",
-    "ts-node": "^10.9.2",
-    "typechain": "^8.3.2",
-    "typescript": "^5.8.3"
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.11"
   }
 }
