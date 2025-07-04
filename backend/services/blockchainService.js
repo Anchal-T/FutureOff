@@ -2,15 +2,13 @@ const { ethers } = require('ethers');
 const config = require('../config');
 const yieldOptimizerArtifact = require('../abi/YieldOptimizer.json');
 const strategyManagerArtifact = require('../abi/StrategyManager.json');
+const databaseService = require('./databaseService');
 
 const provider = new ethers.providers.JsonRpcProvider(config.rpcUrl);
 const wallet = new ethers.Wallet(config.privateKey, provider);
 
 const yieldOptimizer = new ethers.Contract(config.yieldOptimizerAddress, yieldOptimizerArtifact.abi, wallet);
 const strategyManager = new ethers.Contract(config.strategyManagerAddress, strategyManagerArtifact.abi, wallet);
-
-// Simulation mode flag - set to true for testing without actual transactions
-const SIMULATION_MODE = true;
 
 async function checkBalance() {
     try {
@@ -25,9 +23,22 @@ async function checkBalance() {
 }
 
 async function executeStrategy(strategyId, amount) {
-    if (SIMULATION_MODE) {
+    if (config.simulationMode) {
+        const simulationData = {
+            strategyId,
+            amount,
+            action: 'executeStrategy',
+            walletAddress: wallet.address
+        };
+        
         console.log(`[SIMULATION] Would execute strategy ${strategyId} with amount ${amount}`);
-        return { hash: 'simulation_tx_hash', status: 'simulated' };
+        await databaseService.addSimulationLog('executeStrategy', simulationData);
+        
+        return { 
+            hash: `simulation_tx_${Date.now()}`, 
+            status: 'simulated',
+            simulationData 
+        };
     }
     
     const hasBalance = await checkBalance();
@@ -46,9 +57,23 @@ async function executeStrategy(strategyId, amount) {
 }
 
 async function createStrategy(protocol, token, riskScore) {
-    if (SIMULATION_MODE) {
+    if (config.simulationMode) {
+        const simulationData = {
+            protocol,
+            token,
+            riskScore,
+            action: 'createStrategy',
+            walletAddress: wallet.address
+        };
+        
         console.log(`[SIMULATION] Would create strategy: protocol=${protocol}, token=${token}, riskScore=${riskScore}`);
-        return { hash: 'simulation_tx_hash', status: 'simulated' };
+        await databaseService.addSimulationLog('createStrategy', simulationData);
+        
+        return { 
+            hash: `simulation_tx_${Date.now()}`, 
+            status: 'simulated',
+            simulationData 
+        };
     }
     
     const hasBalance = await checkBalance();

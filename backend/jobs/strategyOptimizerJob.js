@@ -1,6 +1,7 @@
 const cron = require('node-cron');
 const { getStrategyRecommendation } = require('../services/geminiService');
 const { executeStrategy, createStrategy } = require('../services/blockchainService');
+const databaseService = require('../services/databaseService');
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
@@ -112,7 +113,20 @@ function getEnhancedMockData() {
     ];
 }
 
-// function to save strategy to file
+// function to save strategy to database
+async function saveStrategyToDatabase(strategy) {
+    try {
+        const savedStrategy = await databaseService.addStrategy(strategy);
+        console.log('Strategy saved to database successfully:', savedStrategy.id);
+        return savedStrategy;
+    } catch (error) {
+        console.error('Error saving strategy to database:', error.message);
+        // Fallback to file system
+        saveStrategyToFile(strategy);
+    }
+}
+
+// Legacy function to save strategy to file (kept as fallback)
 function saveStrategyToFile(strategy) {
     const filePath = path.join(__dirname, '../data/strategies.json');
     let strategies = [];
@@ -141,24 +155,22 @@ function saveStrategyToFile(strategy) {
     
     try {
         fs.writeFileSync(filePath, JSON.stringify(strategies, null, 2), 'utf8');
-        console.log('Strategy saved successfully');
+        console.log('Strategy saved to file successfully');
     } catch (error) {
         console.error('Error saving strategy to file:', error.message);
     }
 }
 
-// Ensure data directory exists
-const dataDir = path.join(__dirname, '../data');
-if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
-}
-
-cron.schedule('* * * * *', async () => {
-    console.log('Running strategy optimization job...');
+// Main strategy optimization function (exported for API use)
+async function runStrategyOptimizer() {
+    console.log('Running strategy optimization...');
     
     try {
         const protocolData = await getProtocolData();
         console.log(`Protocol data fetched: ${protocolData.length} protocols`);
+        
+        // Update protocols in database
+        await databaseService.updateProtocols(protocolData);
         
         const recommendations = await getStrategyRecommendation(protocolData);
         
@@ -175,12 +187,21 @@ cron.schedule('* * * * *', async () => {
                         expectedApy: recommendation.expectedApy
                     });
                     try {
-                        await createStrategy(
+                        const result = await createStrategy(
                             recommendation.protocol,
                             recommendation.token,
                             recommendation.riskScore
                         );
-                        saveStrategyToFile(recommendation);
+                        const savedStrategy = await saveStrategyToDatabase(recommendation);
+                        
+                        // Add to execution history
+                        await databaseService.addExecutionHistory({
+                            strategyId: savedStrategy.id,
+                            action: 'create',
+                            result,
+                            recommendation
+                        });
+                        
                         console.log('Strategy created successfully');
                     } catch (error) {
                         console.error('Error creating strategy:', error.message);
@@ -193,8 +214,17 @@ cron.schedule('* * * * *', async () => {
                         amount: recommendation.amount
                     });
                     try {
-                        await executeStrategy(recommendation.strategyId, recommendation.amount);
-                        saveStrategyToFile(recommendation);
+                        const result = await executeStrategy(recommendation.strategyId, recommendation.amount);
+                        await saveStrategyToDatabase(recommendation);
+                        
+                        // Add to execution history
+                        await databaseService.addExecutionHistory({
+                            strategyId: recommendation.strategyId,
+                            action: 'execute',
+                            amount: recommendation.amount,
+                            result
+                        });
+                        
                         console.log('Strategy executed successfully');
                     } catch (error) {
                         console.error('Error executing strategy:', error.message);
@@ -207,7 +237,13 @@ cron.schedule('* * * * *', async () => {
                         to: recommendation.toProtocol,
                         percentage: recommendation.percentage
                     });
-                    saveStrategyToFile(recommendation);
+                    await saveStrategyToDatabase(recommendation);
+                    
+                    // Add to execution history
+                    await databaseService.addExecutionHistory({
+                        action: 'rebalance',
+                        recommendation
+                    });
                     break;
                     
                 case 'NO_ACTION':
@@ -219,10 +255,22 @@ cron.schedule('* * * * *', async () => {
             }
         }
         
-        console.log('Strategy optimization job finished.');
+        console.log('Strategy optimization finished.');
     } catch (error) {
-        console.error('Error in strategy optimization job:', error);
+        console.error('Error in strategy optimization:', error);
+        throw error;
     }
-});
+}
+
+// Ensure data directory exists
+const dataDir = path.join(__dirname, '../data');
+if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+}
+
+// Schedule the cron job
+cron.schedule('* * * * *', runStrategyOptimizer);
 
 console.log('Cron job scheduled to run every minute');
+
+module.exports = { runStrategyOptimizer };
