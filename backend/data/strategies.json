@@ -1,10 +1,28 @@
 [
   {
+    "action": "CREATE_STRATEGY",
+    "protocol": "0x1F98431c8aD98523631AE4a59f267346ea31F984",
+    "token": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+    "riskScore": 3500,
+    "expectedApy": 19.13,
+    "reasoning": "This Uniswap-v3 pool offers the highest available APY (19.13%). Although its TVL ($69.4M) is below the $100M threshold for general 'CREATE_STRATEGY' guidelines, it perfectly aligns with the 'High risk' category (APY > 8%, TVL < $100M), making it a prime target for aggressive yield optimization.",
+    "timestamp": "2025-07-04T06:32:41.533Z"
+  },
+  {
+    "action": "CREATE_STRATEGY",
+    "protocol": "0x1F98431c8aD98523631AE4a59f267346ea31F984",
+    "token": "0xa0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    "riskScore": 3500,
+    "expectedApy": 8.87,
+    "reasoning": "This Uniswap-v3 pool offers a very high APY (8.87%). Similar to the WBTC-USDC pool, its TVL ($95.6M) is just under the $100M general threshold, but it precisely fits the 'High risk' category definition (APY > 8%, TVL < $100M). This represents a significant opportunity for yield enhancement.",
+    "timestamp": "2025-07-04T06:32:41.534Z"
+  },
+  {
     "action": "REBALANCE",
     "fromProtocol": "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
     "toProtocol": "0x1F98431c8aD98523631AE4a59f267346ea31F984",
-    "percentage": 100,
-    "reasoning": "No protocols strictly meet the 'CREATE_STRATEGY' criteria (APY > 4% AND TVL > $100M). The 'NO_ACTION' condition is also not met as high APY options exist. Therefore, a 'REBALANCE' is recommended. Moving capital from a low-yielding, high-TVL asset (Aave-v3 WETH at 1.89% APY, $972M TVL) to a higher-yielding alternative (Uniswap-v3 USDC-WETH at 8.87% APY, $95.6M TVL) provides a significant APY increase of 6.98%, exceeding the 1% rebalance threshold. While Uniswap-v3 carries a higher risk score (3500) and slightly lower TVL than the Aave pool, it offers substantial yield optimization.",
-    "timestamp": "2025-07-04T06:26:40.376Z"
+    "percentage": 50,
+    "reasoning": "To optimize yield, it is advisable to rebalance funds from lower-yielding Aave-v3 WETH (APY 1.89%) to the higher-yielding Uniswap-v3 USDC-WETH pool (APY 8.87%). The APY difference of 6.98% significantly surpasses the 1% rebalance threshold, indicating a beneficial move for capital currently earning low returns in a relatively safe, but underutilized, pool.",
+    "timestamp": "2025-07-04T06:32:41.536Z"
   }
 ]

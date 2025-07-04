@@ -120,24 +120,30 @@ function saveStrategyToFile(strategy) {
     if (fs.existsSync(filePath)) {
         try {
             const fileContent = fs.readFileSync(filePath, 'utf8');
-            if (fileContent.trim()) { // Check if file is not empty
-                strategies = JSON.parse(fileContent);
+            // Remove BOM if present and check if file is not empty
+            const cleanContent = fileContent.replace(/^\uFEFF/, '').trim();
+            if (cleanContent && cleanContent !== '') {
+                strategies = JSON.parse(cleanContent);
             }
         } catch (error) {
-            console.error('Error reading existing strategies file:', error);
+            console.error('Error reading existing strategies file:', error.message);
             strategies = [];
-            // Clear corrupted file
-            fs.writeFileSync(filePath, '[]');
+            // Initialize with clean empty array
+            try {
+                fs.writeFileSync(filePath, '[]', 'utf8');
+            } catch (writeError) {
+                console.error('Error initializing strategies file:', writeError.message);
+            }
         }
     }
     
     strategies.push({ ...strategy, timestamp: new Date().toISOString() });
     
     try {
-        fs.writeFileSync(filePath, JSON.stringify(strategies, null, 2));
+        fs.writeFileSync(filePath, JSON.stringify(strategies, null, 2), 'utf8');
         console.log('Strategy saved successfully');
     } catch (error) {
-        console.error('Error saving strategy to file:', error);
+        console.error('Error saving strategy to file:', error.message);
     }
 }
 
