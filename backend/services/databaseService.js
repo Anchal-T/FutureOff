@@ -1,18 +1,15 @@
-const { Low } = require('lowdb');
-const { JSONFile } = require('lowdb/node');
 const fs = require('fs');
 const path = require('path');
 
-// Database adapter
-const file = path.join(__dirname, '../data/db.json');
-const adapter = new JSONFile(file);
-const db = new Low(adapter);
+let db;
 
-// Initialize database
 async function initDB() {
+    const { Low, JSONFile } = await import('lowdb');
+    const file = path.join(__dirname, '../data/db.json');
+    const adapter = new JSONFile(file);
+    db = new Low(adapter);
+
     await db.read();
-    
-    // Default data structure
     db.data ||= {
         strategies: [],
         protocols: [],
@@ -43,12 +40,10 @@ async function initDB() {
 
 // Strategy operations
 async function getStrategies() {
-    await db.read();
     return db.data.strategies;
 }
 
 async function addStrategy(strategy) {
-    await db.read();
     const newStrategy = {
         id: `strategy_${Date.now()}`,
         ...strategy,
@@ -61,7 +56,6 @@ async function addStrategy(strategy) {
 }
 
 async function updateStrategyStatus(id, status, executionDetails = {}) {
-    await db.read();
     const strategy = db.data.strategies.find(s => s.id === id);
     if (strategy) {
         strategy.status = status;
@@ -76,7 +70,6 @@ async function updateStrategyStatus(id, status, executionDetails = {}) {
 
 // Execution history
 async function addExecutionHistory(entry) {
-    await db.read();
     const historyEntry = {
         id: `exec_${Date.now()}`,
         timestamp: new Date().toISOString(),
@@ -88,7 +81,6 @@ async function addExecutionHistory(entry) {
 }
 
 async function getExecutionHistory(limit = 50) {
-    await db.read();
     return db.data.executionHistory
         .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
         .slice(0, limit);
@@ -96,12 +88,10 @@ async function getExecutionHistory(limit = 50) {
 
 // Protocol operations
 async function getProtocols() {
-    await db.read();
     return db.data.protocols;
 }
 
 async function updateProtocols(protocols) {
-    await db.read();
     db.data.protocols = protocols.map(protocol => ({
         ...protocol,
         lastUpdated: new Date().toISOString()
@@ -112,7 +102,6 @@ async function updateProtocols(protocols) {
 
 // Simulation logs
 async function addSimulationLog(action, details) {
-    await db.read();
     const logEntry = {
         id: `sim_${Date.now()}`,
         timestamp: new Date().toISOString(),
@@ -131,7 +120,6 @@ async function addSimulationLog(action, details) {
 }
 
 async function getSimulationLogs(limit = 100) {
-    await db.read();
     return db.data.simulationLogs
         .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
         .slice(0, limit);
@@ -147,5 +135,6 @@ module.exports = {
     getProtocols,
     updateProtocols,
     addSimulationLog,
-    getSimulationLogs
+    getSimulationLogs,
+    get db() { return db; }
 };

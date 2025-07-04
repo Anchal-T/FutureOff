@@ -2,7 +2,7 @@ const { ethers } = require('ethers');
 const config = require('../config');
 const yieldOptimizerArtifact = require('../abi/YieldOptimizer.json');
 const strategyManagerArtifact = require('../abi/StrategyManager.json');
-const databaseService = require('./databaseService.mjs');
+const databaseService = require('./databaseService.js');
 
 const provider = new ethers.providers.JsonRpcProvider(config.rpcUrl);
 const wallet = new ethers.Wallet(config.privateKey, provider);

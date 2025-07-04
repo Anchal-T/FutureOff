@@ -1,7 +1,7 @@
 const cron = require('node-cron');
 const { getStrategyRecommendation } = require('../services/geminiService');
 const { executeStrategy, createStrategy } = require('../services/blockchainService');
-const databaseService = require('../services/databaseService.mjs');
+const databaseService = require('../services/databaseService.js');
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
