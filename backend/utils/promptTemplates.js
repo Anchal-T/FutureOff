@@ -11,26 +11,26 @@ function getStrategyPrompt(protocolData) {
         - NO_ACTION: If no action is needed
 
         Return ONLY this JSON format:
-        {
+        [{
             "action": "CREATE_STRATEGY",
             "protocol": "0x1234567890123456789012345678901234567890",
             "token": "0x1234567890123456789012345678901234567890",
             "riskScore": 2000
-        }
+}]
 
         OR
 
-        {
+        [{
             "action": "EXECUTE_STRATEGY",
             "strategyId": 1,
             "amount": "1000000000000000000"
-        }
+}]
 
         OR
 
-        {
+        [{
             "action": "NO_ACTION"
-        }
+}]
 
         Return only valid JSON, nothing else.
     `;

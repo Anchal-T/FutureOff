@@ -8,8 +8,22 @@ const path = require('path');
 async function getProtocolData() {
     // In a real implementation, you would fetch this from The Graph, Moralis, etc.
     return [
-        { name: 'Aave', apy: 5.2, tvl: 1000000000, riskScore: 2000 },
-        { name: 'Compound', apy: 4.8, tvl: 800000000, riskScore: 2500 },
+        {
+            name: 'Aave',
+            protocol: '0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9', // Aave V2 Lending Pool
+            token: '0x6B175474E89094C44Da98b954EedeAC495271d0F',    // DAI
+            apy: 5.2,
+            tvl: 1000000000,
+            riskScore: 2000
+        },
+        {
+            name: 'Compound',
+            protocol: '0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B', // Compound Comptroller
+            token: '0x6B175474E89094C44Da98b954EedeAC495271d0F',    // DAI
+            apy: 4.8,
+            tvl: 800000000,
+            riskScore: 2500
+        },
     ];
 }
 

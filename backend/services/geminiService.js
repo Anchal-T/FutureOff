@@ -13,11 +13,19 @@ async function getStrategyRecommendation(protocolData) {
     
     console.log('Gemini AI Response:', text);
     
+    // Strip markdown code blocks if present
+    let cleanText = text.trim();
+    if (cleanText.startsWith('```json')) {
+        cleanText = cleanText.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+    } else if (cleanText.startsWith('```')) {
+        cleanText = cleanText.replace(/^```\s*/, '').replace(/\s*```$/, '');
+    }
+    
     try {
-        return JSON.parse(text);
+        return JSON.parse(cleanText);
     } catch (error) {
-        console.error('Failed to parse JSON from AI response:', text);
-        throw new Error(`Invalid JSON response from AI: ${text}`);
+        console.error('Failed to parse JSON from AI response:', cleanText);
+        throw new Error(`Invalid JSON response from AI: ${cleanText}`);
     }
 }
 
