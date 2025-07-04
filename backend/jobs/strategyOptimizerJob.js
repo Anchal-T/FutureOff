@@ -31,8 +31,9 @@ async function getProtocolData() {
         // Map to your structure with enhanced data
         return protocols.map(pool => ({
             name: `${pool.project.charAt(0).toUpperCase() + pool.project.slice(1)} ${pool.symbol}`,
-            protocol: pool.pool, // Pool address
-            token: pool.underlyingTokens && pool.underlyingTokens[0] ? pool.underlyingTokens[0] : '',
+            poolId: pool.pool, // Keep pool ID for reference
+            protocol: getProtocolAddress(pool.project), // Get actual protocol address
+            token: pool.underlyingTokens && pool.underlyingTokens[0] ? pool.underlyingTokens[0] : getTokenAddress(pool.symbol),
             apy: parseFloat(pool.apy.toFixed(2)),
             tvl: pool.tvlUsd,
             chain: pool.chain,
@@ -52,6 +53,33 @@ function calculateRiskScore(apy, tvl) {
     if (apy <= 5 && tvl > 1000000000) return 1500; // Low risk
     if (apy <= 8 && tvl > 100000000) return 2500;  // Medium risk
     return 3500; // High risk
+}
+
+// Get actual protocol addresses based on project name
+function getProtocolAddress(project) {
+    const protocolAddresses = {
+        'aave-v2': '0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9', // Aave V2 Lending Pool
+        'aave-v3': '0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2', // Aave V3 Pool
+        'compound': '0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B', // Compound Comptroller
+        'uniswap-v3': '0x1F98431c8aD98523631AE4a59f267346ea31F984', // Uniswap V3 Factory
+        'curve': '0x90E00ACe148ca3b23Ac1bC8C240C2a7Dd9c2d7f5' // Curve Registry
+    };
+    return protocolAddresses[project] || '0x0000000000000000000000000000000000000000';
+}
+
+// Get token addresses based on symbol
+function getTokenAddress(symbol) {
+    const tokenAddresses = {
+        'DAI': '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+        'USDC': '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+        'USDT': '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+        'WETH': '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+        'WBTC': '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'
+    };
+    
+    // Extract token symbol from pool symbol (e.g., "USDC-WETH" -> "USDC")
+    const mainToken = symbol.split('-')[0];
+    return tokenAddresses[mainToken] || tokenAddresses['DAI']; // Default to DAI
 }
 
 // Enhanced mock data as fallback
@@ -76,7 +104,7 @@ function getEnhancedMockData() {
         {
             name: 'Aave V3 USDC',
             protocol: '0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2',
-            token: '0xA0b86a33E6Fc17fE4e2A9E1b2e5efB4ef36f3c44', // USDC
+            token: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
             apy: 5.1,
             tvl: 1200000000,
             riskScore: 2200
@@ -92,10 +120,14 @@ function saveStrategyToFile(strategy) {
     if (fs.existsSync(filePath)) {
         try {
             const fileContent = fs.readFileSync(filePath, 'utf8');
-            strategies = JSON.parse(fileContent);
+            if (fileContent.trim()) { // Check if file is not empty
+                strategies = JSON.parse(fileContent);
+            }
         } catch (error) {
             console.error('Error reading existing strategies file:', error);
             strategies = [];
+            // Clear corrupted file
+            fs.writeFileSync(filePath, '[]');
         }
     }
     

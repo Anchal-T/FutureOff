@@ -1,18 +1,10 @@
 [
   {
     "action": "REBALANCE",
-    "fromProtocol": "f2726d05-1f8d-4b9c-80e3-43d03d85d117",
-    "toProtocol": "e880e828-ca59-4ec6-8d4f-27182a4dc23d",
+    "fromProtocol": "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+    "toProtocol": "0x1F98431c8aD98523631AE4a59f267346ea31F984",
     "percentage": 100,
-    "reasoning": "Rebalance WETH from Aave-v2 (0.07% APY) to Aave-v3 (1.76% APY) to significantly increase yield while moving to a lower risk score protocol. The APY difference (1.69%) exceeds the 1% threshold.",
-    "timestamp": "2025-07-04T06:14:38.785Z"
-  },
-  {
-    "action": "REBALANCE",
-    "fromProtocol": "aa70268e-4b52-42bf-a116-608b370f9501",
-    "toProtocol": "665dc8bc-c79d-4800-97f7-304bf368e547",
-    "percentage": 50,
-    "reasoning": "Rebalance a portion of USDC from Aave-v3 (3.95% APY) to Uniswap-v3 USDC-WETH LP (8.4% APY). This offers a substantial yield increase (4.45% difference) but requires asset conversion (USDC to WETH) and involves a higher risk profile (3500 vs 2500) due to impermanent loss and Uniswap-v3's high risk classification based on TVL below $100M for this specific pool. A 50% rebalance is suggested for balanced exposure.",
-    "timestamp": "2025-07-04T06:14:38.787Z"
+    "reasoning": "No protocols strictly meet the 'CREATE_STRATEGY' criteria (APY > 4% AND TVL > $100M). The 'NO_ACTION' condition is also not met as high APY options exist. Therefore, a 'REBALANCE' is recommended. Moving capital from a low-yielding, high-TVL asset (Aave-v3 WETH at 1.89% APY, $972M TVL) to a higher-yielding alternative (Uniswap-v3 USDC-WETH at 8.87% APY, $95.6M TVL) provides a significant APY increase of 6.98%, exceeding the 1% rebalance threshold. While Uniswap-v3 carries a higher risk score (3500) and slightly lower TVL than the Aave pool, it offers substantial yield optimization.",
+    "timestamp": "2025-07-04T06:26:40.376Z"
   }
 ]
