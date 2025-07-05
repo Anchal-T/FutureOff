@@ -1,16 +1,17 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { WagmiConfig, createConfig, sepolia } from 'wagmi';
-import { createPublicClient, http } from 'viem';
+import { WagmiConfig, createConfig } from 'wagmi';
+import { sepolia } from 'viem/chains';
+import { http } from 'viem';
 import { Web3Provider } from './context/Web3Context';
 import Home from './pages/Home';
 import DashboardPage from './pages/DashboardPage';
 
 const config = createConfig({
-  autoConnect: true,
-  publicClient: createPublicClient({
-    chain: sepolia,
-    transport: http('https://eth-sepolia.g.alchemy.com/v2/YOUR_ALCHEMY_API_KEY'),
-  }),
+  chains: [sepolia],
+  transports: {
+    [sepolia.id]: http('https://eth-sepolia.g.alchemy.com/v2/J5OB6jOnqBqmPzxhWdBmNa_mHbNXEqLy'),
+  },
+  ssr: false,
 });
 
 function App() {

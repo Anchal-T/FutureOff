@@ -27,7 +27,7 @@ REACT_APP_ALCHEMY_API_KEY=your-alchemy-api-key
    - Copy the provided file contents into each file.
 
 2. **Update Alchemy API Key**:
-   - Replace `YOUR_ALCHEMY_API_KEY` in `src/App.jsx` with your actual Alchemy API key for Sepolia testnet (get it from [alchemy.com](https://www.alchemy.com/)).
+   - Replace `J5OB6jOnqBqmPzxhWdBmNa_mHbNXEqLy` in `src/App.jsx` with your actual Alchemy API key for Sepolia testnet (get it from [alchemy.com](https://www.alchemy.com/)).
    - Add the key to `.env`:
      ```env
      REACT_APP_ALCHEMY_API_KEY=your-alchemy-api-key

@@ -1,4 +1,4 @@
-import { useAccount, useChainId } from 'wagmi';
+import { useAccount, useChainId} from 'wagmi';
 
 const useWeb3 = () => {
   const { address, isConnected } = useAccount();

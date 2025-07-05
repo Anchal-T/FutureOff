@@ -1,17 +1,16 @@
 import React, { createContext, useContext } from 'react';
-import { useAccount} from 'wagmi';
-import { useChainId } from 'wagmi';
+import { useAccount, useChainId } from 'wagmi';
 
 const Web3Context = createContext();
 
 export const Web3Provider = ({ children }) => {
   const { address, isConnected } = useAccount();
-  const { chain } = useChainId();
+  const chainId = useChainId();
 
   const value = {
     address,
     isConnected,
-    chainId: chain?.id,
+    chainId,
   };
 
   return <Web3Context.Provider value={value}>{children}</Web3Context.Provider>;
