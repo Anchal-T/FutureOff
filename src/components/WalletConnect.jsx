@@ -1,11 +1,25 @@
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
-import { injected } from 'wagmi/connectors';
 import Button from './common/Button';
 
 function WalletConnect() {
   const { address, isConnected } = useAccount();
-  const { connect } = useConnect({ connector: new injected() });
+  const { connect, connectors, error, isError, isPending } = useConnect();
   const { disconnect } = useDisconnect();
+
+  const handleConnect = () => {
+    // Try MetaMask first, then fall back to injected
+    const metaMaskConnector = connectors.find((connector) => connector.id === 'metaMask');
+    const injectedConnector = connectors.find((connector) => connector.id === 'injected');
+    
+    if (metaMaskConnector) {
+      connect({ connector: metaMaskConnector });
+    } else if (injectedConnector) {
+      connect({ connector: injectedConnector });
+    } else {
+      // Fallback to the first available connector
+      connect({ connector: connectors[0] });
+    }
+  };
 
   return (
     <div className="flex items-center space-x-4">
@@ -22,13 +36,21 @@ function WalletConnect() {
           </Button>
         </>
       ) : (
-        <Button 
-          onClick={() => connect()} 
-          className="bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
-          size="md"
-        >
-          🔗 Connect Wallet
-        </Button>
+        <>
+          <Button 
+            onClick={handleConnect} 
+            disabled={isPending}
+            className="bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+            size="md"
+          >
+            {isPending ? '� Connecting...' : '�🔗 Connect Wallet'}
+          </Button>
+          {isError && (
+            <div className="text-red-400 text-sm mt-2">
+              {error?.message || 'Failed to connect wallet'}
+            </div>
+          )}
+        </>
       )}
     </div>
   );
