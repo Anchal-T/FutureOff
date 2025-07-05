@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { BACKEND_API_URL } from '../utils/constants';
+import { fetchProtocols } from '../utils/api';
 
 const useYields = () => {
   const [yields, setYields] = useState([]);
@@ -10,10 +9,13 @@ const useYields = () => {
   useEffect(() => {
     const fetchYields = async () => {
       try {
-        const response = await axios.get(`${BACKEND_API_URL}/api/yields`);
-        setYields(response.data); // Example: [{ id: 'aave', name: 'Aave', apy: 5.2 }, ...]
+        const response = await fetchProtocols();
+        // Transform the protocols data to match the expected yields format
+        const protocolsData = response.success ? response.data : [];
+        setYields(protocolsData);
         setLoading(false);
       } catch (err) {
+        console.error('Failed to fetch yields:', err);
         setError(err.message);
         setLoading(false);
       }
